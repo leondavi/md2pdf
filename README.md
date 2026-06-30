@@ -161,7 +161,14 @@ it entirely at your own risk; the authors are not liable for any claim, damages,
 or other liability arising from its use. See the [LICENSE](LICENSE) for the full
 terms.
 
+## Acknowledgements
+
+md2pdf stands on great open-source work — see
+[docs/ACKNOWLEDGEMENTS.md](docs/ACKNOWLEDGEMENTS.md) for the libraries, fonts,
+and tools it uses, with their licenses.
+
 ## License
 
 MIT — see [LICENSE](LICENSE). Bundles the DejaVu fonts (see
-`assets/fonts/DejaVu-LICENSE.txt`).
+`assets/fonts/DejaVu-LICENSE.txt`). Third-party credits are in
+[docs/ACKNOWLEDGEMENTS.md](docs/ACKNOWLEDGEMENTS.md).
