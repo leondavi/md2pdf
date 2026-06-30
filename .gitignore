@@ -1,0 +1,14 @@
+# Rust build output
+/target
+
+# Packaging artifacts
+/dist
+/packaging/build
+/packaging/icon-master.png
+
+# Generated PDFs
+*.pdf
+
+# macOS / editor / tooling cruft
+.DS_Store
+/.claude

@@ -1,0 +1,34 @@
+[package]
+name = "md2pdf"
+version = "0.1.0"
+edition = "2021"
+description = "A self-contained Markdown to PDF converter with a CLI and a simple macOS GUI"
+license = "MIT"
+readme = "README.md"
+
+[lib]
+name = "md2pdf"
+path = "src/lib.rs"
+
+[[bin]]
+name = "md2pdf"
+path = "src/bin/md2pdf.rs"
+
+[[bin]]
+name = "md2pdf-gui"
+path = "src/bin/md2pdf-gui.rs"
+
+[dependencies]
+pulldown-cmark = { version = "0.9", default-features = false }
+genpdf = "0.2"
+# CLI
+clap = { version = "4", features = ["derive"] }
+# GUI
+eframe = { version = "0.27", default-features = false, features = ["glow", "default_fonts"] }
+rfd = "0.14"
+
+[profile.release]
+opt-level = 2
+lto = true
+codegen-units = 1
+strip = true
