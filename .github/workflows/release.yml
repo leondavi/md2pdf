@@ -1,7 +1,8 @@
 name: release
 
-# Build the macOS artifacts (.app, .dmg, .pkg, .tar.gz) and attach them to a
-# GitHub Release whenever a version tag is pushed. Can also be run manually.
+# Build the macOS artifacts (.dmg, .pkg, .tar.gz) and the Windows installer,
+# then attach them all to a single GitHub Release whenever a version tag is
+# pushed. Can also be run manually (build only; no publish).
 on:
   push:
     tags:
@@ -27,12 +28,6 @@ jobs:
       - name: Cache cargo build
         uses: Swatinem/rust-cache@v2
 
-      - name: Install Pillow (for the app icon)
-        run: |
-          python3 -m pip install --user pillow \
-            || python3 -m pip install --break-system-packages pillow \
-            || true
-
       - name: Build universal macOS artifacts
         run: bash packaging/build-macos.sh
 
@@ -45,17 +40,6 @@ jobs:
           name: md2pdf-macos
           path: dist/*
           if-no-files-found: error
-
-      - name: Publish GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          draft: false
-          generate_release_notes: true
-          files: |
-            dist/*.dmg
-            dist/*.pkg
-            dist/*.tar.gz
 
   windows:
     name: Build Windows installer (x64)
@@ -101,10 +85,28 @@ jobs:
           path: dist/*
           if-no-files-found: error
 
+  # Single publish step so the per-OS jobs never overwrite each other's assets.
+  publish:
+    name: Publish GitHub Release
+    needs: [macos, windows]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Collect release files
+        run: |
+          mkdir -p dist
+          find artifacts -type f \( -name '*.dmg' -o -name '*.pkg' -o -name '*.tar.gz' -o -name '*setup.exe' \) \
+            -exec cp {} dist/ \;
+          ls -lh dist
+
       - name: Publish to GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           draft: false
           generate_release_notes: true
-          files: dist/*setup.exe
+          files: dist/*
