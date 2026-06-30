@@ -15,6 +15,11 @@ system fonts, no headless browser, no LaTeX.
 cost. It is provided **as-is, with no warranty of any kind** — see
 [Disclaimer](#disclaimer).
 
+**100% local and private.** All conversion happens entirely on your own machine.
+Nothing is ever uploaded — md2pdf makes **no network connections**, requires no
+account, and collects no telemetry. Your documents never leave your computer, so
+it is safe to use with confidential and sensitive files.
+
 ## Features
 
 - Headings, **bold**, *italic*, `inline code`, and ~~strikethrough~~
@@ -24,6 +29,7 @@ cost. It is provided **as-is, with no warranty of any kind** — see
 - Tables and image alt-text
 - A4 / Letter / Legal paper sizes
 - Automatic word-wrapping and page breaks
+- Fully offline and private — no network, no uploads, no telemetry
 
 ## The app (GUI)
 
