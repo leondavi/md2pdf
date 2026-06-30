@@ -67,8 +67,8 @@ Actions.
 ### Disk image (easiest)
 
 Open **`md2pdf-<version>-macos-<arch>.dmg`** and drag **md2pdf.app** onto the
-**Applications** shortcut. The optional `cli/md2pdf` binary inside can be copied
-to `/usr/local/bin` for command-line use.
+**Applications** shortcut. (For the command-line tool, use the `.pkg` or the
+tarball below.)
 
 ### Installer package
 
@@ -82,9 +82,22 @@ Open **`dist/md2pdf-<version>.pkg`** and follow the prompts. It installs:
 Unpack `dist/md2pdf-<version>-macos-<arch>.tar.gz` and move `md2pdf.app` to
 `/Applications` and `md2pdf` somewhere on your `PATH`.
 
-> **Gatekeeper note:** the binaries are signed ad-hoc, not notarized. The first
-> launch may need right-click → **Open** (app), or
-> `xattr -dr com.apple.quarantine md2pdf.app` to clear the quarantine flag.
+> ### First launch on macOS (Gatekeeper)
+>
+> The app is signed ad-hoc but **not notarized** (notarization needs a paid
+> Apple Developer ID). macOS may show *"Apple could not verify md2pdf is free of
+> malware."* This is expected — it is not actually malware. After moving
+> `md2pdf.app` to `/Applications`, use **either**:
+>
+> - **Terminal (most reliable):**
+>   ```sh
+>   xattr -dr com.apple.quarantine /Applications/md2pdf.app
+>   ```
+>   then open the app normally; or
+> - **System Settings → Privacy & Security:** try to open the app once, then
+>   click **Open Anyway** there and confirm.
+>
+> The `.pkg` installer avoids the per-app prompt for most users.
 
 ### Windows (x64)
 
