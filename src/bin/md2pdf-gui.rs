@@ -50,11 +50,23 @@ fn setup_style(ctx: &egui::Context) {
     let mut style = (*ctx.style()).clone();
 
     style.text_styles = [
-        (TextStyle::Heading, FontId::new(26.0, FontFamily::Proportional)),
+        (
+            TextStyle::Heading,
+            FontId::new(26.0, FontFamily::Proportional),
+        ),
         (TextStyle::Body, FontId::new(15.0, FontFamily::Proportional)),
-        (TextStyle::Button, FontId::new(15.0, FontFamily::Proportional)),
-        (TextStyle::Small, FontId::new(12.5, FontFamily::Proportional)),
-        (TextStyle::Monospace, FontId::new(13.5, FontFamily::Monospace)),
+        (
+            TextStyle::Button,
+            FontId::new(15.0, FontFamily::Proportional),
+        ),
+        (
+            TextStyle::Small,
+            FontId::new(12.5, FontFamily::Proportional),
+        ),
+        (
+            TextStyle::Monospace,
+            FontId::new(13.5, FontFamily::Monospace),
+        ),
     ]
     .into();
 
@@ -115,7 +127,11 @@ fn primary_button(ui: &mut egui::Ui, label: &str, enabled: bool) -> egui::Respon
         .color(Color32::WHITE)
         .size(16.0)
         .strong();
-    let fill = if enabled { ACCENT } else { Color32::from_rgb(0xB8, 0xC6, 0xE6) };
+    let fill = if enabled {
+        ACCENT
+    } else {
+        Color32::from_rgb(0xB8, 0xC6, 0xE6)
+    };
     let button = egui::Button::new(text)
         .fill(fill)
         .rounding(egui::Rounding::same(10.0))
@@ -177,7 +193,10 @@ impl App {
     fn pick_file(&mut self) {
         if let Some(path) = rfd::FileDialog::new()
             .set_title("Choose a Markdown file")
-            .add_filter("Markdown", &["md", "markdown", "mkd", "mdown", "text", "txt"])
+            .add_filter(
+                "Markdown",
+                &["md", "markdown", "mkd", "mdown", "text", "txt"],
+            )
             .add_filter("All files", &["*"])
             .pick_file()
         {
@@ -255,7 +274,11 @@ impl eframe::App for App {
         let hovering_file = ctx.input(|i| !i.raw.hovered_files.is_empty());
 
         egui::CentralPanel::default()
-            .frame(egui::Frame::none().fill(BG).inner_margin(egui::Margin::same(22.0)))
+            .frame(
+                egui::Frame::none()
+                    .fill(BG)
+                    .inner_margin(egui::Margin::same(22.0)),
+            )
             .show(ctx, |ui| {
                 ui.spacing_mut().item_spacing.y = 14.0;
 
@@ -315,7 +338,10 @@ impl App {
                 };
                 egui::Frame::none()
                     .fill(fill)
-                    .stroke(egui::Stroke::new(if hovering_file { 2.0 } else { 1.5 }, stroke_col))
+                    .stroke(egui::Stroke::new(
+                        if hovering_file { 2.0 } else { 1.5 },
+                        stroke_col,
+                    ))
                     .rounding(egui::Rounding::same(12.0))
                     .inner_margin(egui::Margin::symmetric(16.0, 26.0))
                     .show(ui, |ui| {
@@ -358,10 +384,7 @@ impl App {
                         ui.label(egui::RichText::new("📄").size(26.0));
                         ui.add_space(4.0);
                         ui.vertical(|ui| {
-                            let name = path
-                                .file_name()
-                                .and_then(|s| s.to_str())
-                                .unwrap_or("file");
+                            let name = path.file_name().and_then(|s| s.to_str()).unwrap_or("file");
                             ui.label(egui::RichText::new(name).size(15.0).strong().color(INK));
                             let dir = path
                                 .parent()
@@ -383,7 +406,12 @@ impl App {
     fn output_card(&mut self, ui: &mut egui::Ui) {
         ui.add_enabled_ui(self.input.is_some(), |ui| {
             card(ui, |ui| {
-                ui.label(egui::RichText::new("OUTPUT").size(11.5).strong().color(MUTED));
+                ui.label(
+                    egui::RichText::new("OUTPUT")
+                        .size(11.5)
+                        .strong()
+                        .color(MUTED),
+                );
                 ui.add_space(2.0);
 
                 ui.horizontal(|ui| {

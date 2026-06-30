@@ -51,11 +51,18 @@ Run `md2pdf --help` for all options.
 
 ## Installing
 
+### Download a prebuilt release (no build needed)
+
+Grab the latest `.dmg`, `.pkg`, or `.tar.gz` from the
+[**Releases**](https://github.com/leondavi/md2pdf/releases) page. These are
+built automatically as **universal** binaries (Apple Silicon + Intel) by GitHub
+Actions.
+
 ### Disk image (easiest)
 
-Open **`dist/md2pdf-<version>-macos-<arch>.dmg`** and drag **md2pdf.app** onto
-the **Applications** shortcut. The optional `cli/md2pdf` binary inside can be
-copied to `/usr/local/bin` for command-line use.
+Open **`md2pdf-<version>-macos-<arch>.dmg`** and drag **md2pdf.app** onto the
+**Applications** shortcut. The optional `cli/md2pdf` binary inside can be copied
+to `/usr/local/bin` for command-line use.
 
 ### Installer package
 
@@ -91,6 +98,24 @@ first:
 
 ```sh
 rustup target add aarch64-apple-darwin x86_64-apple-darwin
+```
+
+## Continuous integration & releases
+
+Two GitHub Actions workflows live in [`.github/workflows`](.github/workflows):
+
+- **`ci.yml`** — on every push and pull request, runs `cargo fmt --check`,
+  `cargo clippy -D warnings`, `cargo build --release`, and `cargo test`.
+- **`release.yml`** — on every pushed tag matching `v*` (e.g. `v0.1.0`), builds
+  the universal macOS artifacts via `packaging/build-macos.sh` and publishes
+  them to a GitHub Release. It can also be triggered manually from the Actions
+  tab.
+
+Cut a release by tagging a commit:
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
 ```
 
 ## Project layout

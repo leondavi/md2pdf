@@ -1,0 +1,58 @@
+name: release
+
+# Build the macOS artifacts (.app, .dmg, .pkg, .tar.gz) and attach them to a
+# GitHub Release whenever a version tag is pushed. Can also be run manually.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  macos:
+    name: Build macOS artifacts
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust (with both macOS targets)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - name: Cache cargo build
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install Pillow (for the app icon)
+        run: |
+          python3 -m pip install --user pillow \
+            || python3 -m pip install --break-system-packages pillow \
+            || true
+
+      - name: Build universal macOS artifacts
+        run: bash packaging/build-macos.sh
+
+      - name: List artifacts
+        run: ls -lh dist
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: md2pdf-macos
+          path: dist/*
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          generate_release_notes: true
+          files: |
+            dist/*.dmg
+            dist/*.pkg
+            dist/*.tar.gz

@@ -395,7 +395,10 @@ where
             Event::Code(t) => {
                 spans.push(Span {
                     text: t.to_string(),
-                    flags: Flags { code: true, ..flags },
+                    flags: Flags {
+                        code: true,
+                        ..flags
+                    },
                 });
                 iter.next();
             }
@@ -525,7 +528,8 @@ fn render_nodes(nodes: &[Node], theme: &Theme) -> elements::LinearLayout {
                     for line in text.split('\n') {
                         let display = if line.is_empty() { " " } else { line };
                         inner.push(
-                            elements::Paragraph::default().styled_string(display.to_string(), style),
+                            elements::Paragraph::default()
+                                .styled_string(display.to_string(), style),
                         );
                     }
                 }
@@ -602,8 +606,8 @@ fn build_table(
         for c in 0..cols {
             let empty = Vec::new();
             let spans = cells.get(c).unwrap_or(&empty);
-            let para = build_paragraph(spans, style, theme)
-                .padded(genpdf::Margins::trbl(1, 2, 1, 2));
+            let para =
+                build_paragraph(spans, style, theme).padded(genpdf::Margins::trbl(1, 2, 1, 2));
             row.push_element(para);
         }
         let _ = row.push();
