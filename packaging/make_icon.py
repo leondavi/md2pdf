@@ -90,6 +90,18 @@ def main():
     img.save(OUT)
     print("wrote", OUT)
 
+    # Also emit the committed repo logo (PNG) and the Windows icon (ICO).
+    repo = os.path.dirname(os.path.dirname(__file__))
+    logo_png = os.path.join(repo, "assets", "logo.png")
+    img.resize((512, 512)).save(logo_png)
+    print("wrote", logo_png)
+
+    logo_ico = os.path.join(repo, "assets", "logo.ico")
+    ico_sizes = [(16, 16), (24, 24), (32, 32), (48, 48),
+                 (64, 64), (128, 128), (256, 256)]
+    img.save(logo_ico, sizes=ico_sizes)
+    print("wrote", logo_ico)
+
 
 if __name__ == "__main__":
     main()

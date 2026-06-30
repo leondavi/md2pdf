@@ -67,10 +67,17 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# 2. Generate the icon (best effort — skipped if Python/PIL unavailable)
+# 2. Obtain the app icon.
+#    Prefer the committed packaging/AppIcon.icns (so the icon never depends on
+#    Python/PIL being installed on the build machine). Only regenerate it when
+#    that file is missing AND PIL is available.
 # ---------------------------------------------------------------------------
 ICNS=""
-if python3 -c 'import PIL' >/dev/null 2>&1; then
+COMMITTED_ICNS="$ROOT/packaging/AppIcon.icns"
+if [[ -f "$COMMITTED_ICNS" ]]; then
+    echo "==> using committed app icon"
+    ICNS="$COMMITTED_ICNS"
+elif python3 -c 'import PIL' >/dev/null 2>&1; then
     echo "==> generating app icon"
     python3 packaging/make_icon.py
     ICONSET="$BUILD/AppIcon.iconset"
@@ -88,8 +95,9 @@ if python3 -c 'import PIL' >/dev/null 2>&1; then
     rm -f "$ICONSET/icon_64x64.png" "$ICONSET/icon_1024x1024.png"
     ICNS="$BUILD/AppIcon.icns"
     iconutil -c icns "$ICONSET" -o "$ICNS"
+    cp "$ICNS" "$COMMITTED_ICNS"  # cache for future builds
 else
-    echo "==> PIL not available; building without a custom icon"
+    echo "==> WARNING: no committed icon and PIL unavailable; app will have no icon"
 fi
 
 # ---------------------------------------------------------------------------
@@ -168,7 +176,8 @@ TARBALL="$DIST/md2pdf-$VERSION-macos-$PKG_ARCH.tar.gz"
 tar -czf "$TARBALL" -C "$BUILD" "md2pdf-$VERSION"
 
 # ---------------------------------------------------------------------------
-# 6. Drag-to-install DMG (md2pdf.app + Applications symlink)
+# 6. Drag-to-install DMG — just the app and an Applications shortcut.
+#    (The CLI ships in the .pkg and the tarball, not here.)
 # ---------------------------------------------------------------------------
 echo "==> building DMG"
 DMG_SRC="$BUILD/dmg"
@@ -176,21 +185,6 @@ rm -rf "$DMG_SRC"
 mkdir -p "$DMG_SRC"
 cp -R "$APP" "$DMG_SRC/"
 ln -s /Applications "$DMG_SRC/Applications"
-# A short note plus the optional CLI for power users.
-cat > "$DMG_SRC/README.txt" <<TXT
-md2pdf $VERSION
-
-To install: drag md2pdf.app onto the Applications folder shown here.
-
-First launch: right-click md2pdf.app -> Open (the app is signed ad-hoc,
-not notarized, so Gatekeeper asks for confirmation the first time only).
-
-Optional command-line tool: copy the 'md2pdf' binary in the 'cli' folder
-to /usr/local/bin (or anywhere on your PATH).
-TXT
-mkdir -p "$DMG_SRC/cli"
-cp "$CLI_BIN" "$DMG_SRC/cli/md2pdf"
-chmod +x "$DMG_SRC/cli/md2pdf"
 find "$DMG_SRC" -name '._*' -delete 2>/dev/null || true
 
 DMG="$DIST/md2pdf-$VERSION-macos-$PKG_ARCH.dmg"

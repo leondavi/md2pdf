@@ -6,10 +6,10 @@
 
 <p align="center">A small, self-contained Markdown to PDF converter for macOS.</p>
 
-A small, self-contained **Markdown -> PDF** converter for macOS, written in Rust.
-It ships as both a simple desktop app and a command-line tool. Fonts are
-embedded in the binary, so there are **no runtime dependencies** — no system
-fonts, no headless browser, no LaTeX.
+A small, self-contained **Markdown -> PDF** converter for **macOS and Windows**,
+written in Rust. It ships as both a simple desktop app and a command-line tool.
+Fonts are embedded in the binary, so there are **no runtime dependencies** — no
+system fonts, no headless browser, no LaTeX.
 
 **Free and open source** (MIT licensed). Use it for anything you like, at no
 cost. It is provided **as-is, with no warranty of any kind** — see
@@ -71,7 +71,7 @@ Open **`dist/md2pdf-<version>.pkg`** and follow the prompts. It installs:
 - `md2pdf.app` → `/Applications`
 - `md2pdf` (CLI) → `/usr/local/bin`
 
-### Portable archive
+### Portable archive (macOS)
 
 Unpack `dist/md2pdf-<version>-macos-<arch>.tar.gz` and move `md2pdf.app` to
 `/Applications` and `md2pdf` somewhere on your `PATH`.
@@ -79,6 +79,16 @@ Unpack `dist/md2pdf-<version>-macos-<arch>.tar.gz` and move `md2pdf.app` to
 > **Gatekeeper note:** the binaries are signed ad-hoc, not notarized. The first
 > launch may need right-click → **Open** (app), or
 > `xattr -dr com.apple.quarantine md2pdf.app` to clear the quarantine flag.
+
+### Windows (x64)
+
+Download and run **`md2pdf-<version>-windows-x64-setup.exe`** from the
+[Releases](https://github.com/leondavi/md2pdf/releases) page. The installer adds
+the **md2pdf** app (Start Menu / optional desktop shortcut) and can put the
+`md2pdf` command-line tool on your `PATH`.
+
+> Windows SmartScreen may warn because the installer is not code-signed; choose
+> **More info → Run anyway**.
 
 ## Building from source
 
@@ -98,6 +108,17 @@ first:
 
 ```sh
 rustup target add aarch64-apple-darwin x86_64-apple-darwin
+```
+
+On **Windows**, build the binaries and package an installer with
+[Inno Setup](https://jrsoftware.org/isinfo.php):
+
+```bat
+cargo build --release --target x86_64-pc-windows-msvc
+iscc /DMyAppVersion=0.1.0 ^
+     /DBinDir=%CD%\target\x86_64-pc-windows-msvc\release ^
+     /DRepoDir=%CD% /DIconFile=%CD%\assets\logo.ico /DOutDir=%CD%\dist ^
+     packaging\windows\md2pdf.iss
 ```
 
 ## Continuous integration & releases
@@ -127,7 +148,9 @@ git push origin v0.1.0
 | `src/bin/md2pdf.rs` | command-line tool |
 | `src/bin/md2pdf-gui.rs` | egui desktop app |
 | `assets/fonts/` | embedded DejaVu fonts |
-| `packaging/` | macOS app/installer build scripts |
+| `assets/logo.*` | app icon / logo (png, ico) |
+| `build.rs` | embeds the icon into the Windows executables |
+| `packaging/` | macOS `.app`/`.pkg`/`.dmg` scripts + Windows Inno Setup script |
 
 ## Disclaimer
 

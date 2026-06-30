@@ -24,6 +24,47 @@ const ACCENT_SOFT: Color32 = Color32::from_rgb(0xEA, 0xF1, 0xFE);
 const SUCCESS: Color32 = Color32::from_rgb(0x12, 0x8A, 0x3C);
 const DANGER: Color32 = Color32::from_rgb(0xC8, 0x2A, 0x2A);
 
+// Platform-specific label for the "reveal in file manager" button.
+#[cfg(target_os = "windows")]
+const REVEAL_LABEL: &str = "🔍  Show in Explorer";
+#[cfg(target_os = "macos")]
+const REVEAL_LABEL: &str = "🔍  Reveal in Finder";
+#[cfg(all(unix, not(target_os = "macos")))]
+const REVEAL_LABEL: &str = "🔍  Show in folder";
+
+/// Open a file with the OS default handler.
+fn open_path(path: &std::path::Path) {
+    #[cfg(target_os = "macos")]
+    let _ = std::process::Command::new("open").arg(path).spawn();
+    #[cfg(target_os = "windows")]
+    let _ = std::process::Command::new("cmd")
+        .arg("/C")
+        .arg("start")
+        .arg("")
+        .arg(path)
+        .spawn();
+    #[cfg(all(unix, not(target_os = "macos")))]
+    let _ = std::process::Command::new("xdg-open").arg(path).spawn();
+}
+
+/// Reveal a file in the system file manager, selecting it if possible.
+fn reveal_path(path: &std::path::Path) {
+    #[cfg(target_os = "macos")]
+    let _ = std::process::Command::new("open")
+        .arg("-R")
+        .arg(path)
+        .spawn();
+    #[cfg(target_os = "windows")]
+    let _ = std::process::Command::new("explorer")
+        .arg(format!("/select,{}", path.display()))
+        .spawn();
+    #[cfg(all(unix, not(target_os = "macos")))]
+    {
+        let dir = path.parent().unwrap_or(path);
+        let _ = std::process::Command::new("xdg-open").arg(dir).spawn();
+    }
+}
+
 fn main() -> eframe::Result<()> {
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
@@ -310,13 +351,10 @@ impl eframe::App for App {
                 if let Some(out) = self.last_output.clone() {
                     ui.horizontal(|ui| {
                         if ui.button("📂  Open PDF").clicked() {
-                            let _ = std::process::Command::new("open").arg(&out).spawn();
+                            open_path(&out);
                         }
-                        if ui.button("🔍  Reveal in Finder").clicked() {
-                            let _ = std::process::Command::new("open")
-                                .arg("-R")
-                                .arg(&out)
-                                .spawn();
+                        if ui.button(REVEAL_LABEL).clicked() {
+                            reveal_path(&out);
                         }
                     });
                 }

@@ -2,9 +2,10 @@
 name = "md2pdf"
 version = "0.1.0"
 edition = "2021"
-description = "A self-contained Markdown to PDF converter with a CLI and a simple macOS GUI"
+description = "A self-contained Markdown to PDF converter with a CLI and a simple GUI"
 license = "MIT"
 readme = "README.md"
+build = "build.rs"
 
 [lib]
 name = "md2pdf"
@@ -26,6 +27,10 @@ clap = { version = "4", features = ["derive"] }
 # GUI
 eframe = { version = "0.27", default-features = false, features = ["glow", "default_fonts"] }
 rfd = "0.14"
+
+# Embed the app icon into the Windows executables.
+[target.'cfg(windows)'.build-dependencies]
+winresource = "0.1"
 
 [profile.release]
 opt-level = 2
